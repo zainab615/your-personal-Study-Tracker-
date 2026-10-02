@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>StudyTrack</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--blue:#356ae6;--blue2:#edf2ff;--border:#e5e9f1;--green:#16845b;--red:#d93b4b;--shadow:0 8px 28px rgba(27,39,72,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:flex}.side{width:245px;position:fixed;inset:0 auto 0 0;background:#fff;border-right:1px solid var(--border);padding:23px 15px;z-index:5}.brand{font-size:23px;font-weight:800;padding:5px 12px 24px}.brand i{color:var(--blue);font-style:normal}.nav button{width:100%;border:0;background:transparent;color:#606a7b;text-align:left;padding:12px 14px;border-radius:10px;margin:3px 0}.nav button:hover,.nav button.active{background:var(--blue2);color:var(--blue);font-weight:700}
+.main{margin-left:245px;width:calc(100% - 245px);padding:28px;max-width:1500px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:23px}h1{font-size:27px;margin:0 0 4px}.sub{font-size:14px;color:var(--muted)}.select{padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:#fff}
+.page{display:none}.page.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:19px;box-shadow:var(--shadow)}.label{font-size:13px;color:var(--muted);margin-bottom:7px}.value{font-size:25px;font-weight:800}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.title{font-size:17px;font-weight:800;margin-bottom:14px}
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}.subject{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.15s}.subject:hover{border-color:#b9c8f7;transform:translateY(-1px)}.sname{font-weight:700}.stime{color:var(--blue);font-size:13px;font-weight:700;margin-top:6px}.progress{height:6px;background:#edf0f5;border-radius:10px;margin-top:10px;overflow:hidden}.bar{height:100%;background:var(--blue);border-radius:10px}
+.timer{text-align:center}.timer-name{font-weight:800;font-size:18px}.clock{font-size:56px;font-weight:800;letter-spacing:2px;margin:18px 0}.status{height:20px;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.timer .actions{justify-content:center}.btn{padding:10px 14px;border:0;border-radius:9px;background:#eef1f6;color:#283247;font-weight:700}.btn.primary{background:var(--blue);color:#fff}.btn.green{background:#eaf8f2;color:var(--green)}.btn.red{background:#fff0f1;color:var(--red)}.btn.small{padding:7px 9px;font-size:12px}
+.streams{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}.stream{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer}.stream.active{border:2px solid var(--blue);padding:15px}.stream b{display:block;margin-bottom:5px}.stream span{font-size:12px;color:var(--muted)}
+.form{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.input{padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;outline:0}.input:focus{border-color:#9eb3f4}
+.table{overflow:auto}.table table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;white-space:nowrap}.table th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:30px}
+.notice{background:#eef4ff;border:1px solid #d8e3ff;color:#36538d;border-radius:10px;padding:12px;font-size:13px;margin-bottom:15px}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:16px}.filebtn{display:inline-block;padding:10px 14px;border-radius:9px;background:#eef1f6;font-weight:700;cursor:pointer}
+.chartwrap{height:250px}.chart{width:100%;height:230px}
+.modal-bg{display:none;position:fixed;inset:0;background:#0005;z-index:20;align-items:center;justify-content:center;padding:20px}.modal-bg.show{display:flex}.modal{background:#fff;border-radius:15px;padding:22px;width:min(430px,100%)}.modal h3{margin-top:0}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.streams{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.app{display:block}.side{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--border)}.nav{display:flex;overflow:auto;gap:4px}.nav button{white-space:nowrap}.main{margin:0;width:100%;padding:16px}.top{align-items:flex-start}.cards{grid-template-columns:1fr 1fr}.streams{grid-template-columns:1fr 1fr}.clock{font-size:43px}.settings{grid-template-columns:1fr}}
+
+/* StudyTrack Lavender & Cream visual skin — layout/functionality unchanged */
+:root{
+  --bg:#F8F6FC;
+  --card:#FFFFFF;
+  --text:#29263A;
+  --muted:#777389;
+  --blue:#8171D9;
+  --blue2:#F0EDFF;
+  --border:#E9E5F2;
+  --green:#3C9B7A;
+  --red:#D56B78;
+  --shadow:0 8px 28px rgba(82,69,125,.08);
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Aptos,"Segoe UI",Arial,sans-serif;
+}
+.side{
+  background:#FFFEFF;
+  border-right:1px solid var(--border);
+  box-shadow:4px 0 18px rgba(82,69,125,.025);
+}
+.brand{
+  letter-spacing:-.3px;
+}
+.brand i{color:var(--blue)}
+.nav button{
+  color:#716D7F;
+  transition:background .18s ease,color .18s ease,transform .18s ease;
+}
+.nav button:hover{
+  background:#F6F3FF;
+  color:var(--blue);
+  transform:translateX(2px);
+}
+.nav button.active{
+  background:var(--blue2);
+  color:var(--blue);
+  font-weight:700;
+}
+.select{
+  border-color:var(--border);
+  color:var(--text);
+  box-shadow:0 3px 12px rgba(82,69,125,.04);
+}
+.card{
+  border-color:var(--border);
+  box-shadow:var(--shadow);
+  transition:box-shadow .18s ease,transform .18s ease;
+}
+.card:hover{
+  box-shadow:0 10px 30px rgba(82,69,125,.10);
+}
+.subject{
+  border-color:var(--border);
+  box-shadow:0 3px 12px rgba(82,69,125,.035);
+  transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+.subject:hover{
+  border-color:#C9BFF3;
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(82,69,125,.08);
+}
+.stime{color:var(--blue)}
+.progress{background:#F0EEF5}
+.bar{background:var(--blue)}
+.clock{
+  color:#4B426D;
+  letter-spacing:1px;
+}
+.btn{
+  background:#F2F0F6;
+  color:#373247;
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(82,69,125,.10);
+}
+.btn.primary{
+  background:var(--blue);
+  color:#fff;
+}
+.btn.primary:hover{background:#7463CF}
+.btn.green{background:#EAF7F1;color:var(--green)}
+.btn.red{background:#FFF0F2;color:var(--red)}
+.stream{
+  border-color:var(--border);
+  box-shadow:0 3px 12px rgba(82,69,125,.035);
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.stream:hover{
+  transform:translateY(-2px);
+  border-color:#C9BFF3;
+  box-shadow:0 8px 18px rgba(82,69,125,.08);
+}
+.stream.active{
+  border-color:var(--blue);
+  background:#FAF8FF;
+  box-shadow:0 6px 18px rgba(129,113,217,.12);
+}
+.input{
+  border-color:var(--border);
+  color:var(--text);
+}
+.input:focus{
+  border-color:#B4A8E9;
+  box-shadow:0 0 0 3px #F0EDFF;
+}
+.table th,.table td{border-bottom-color:var(--border)}
+.notice{
+  background:#F2EFFF;
+  border-color:#E2DCF9;
+  color:#5D538B;
+}
+.filebtn{
+  background:#F2F0F6;
+  color:#373247;
+}
+.filebtn:hover{background:#ECE8F4}
+.modal-bg{background:rgba(42,36,57,.38)}
+.modal{
+  box-shadow:0 18px 50px rgba(55,45,88,.18);
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="brand">Study<i>Track</i></div>
+<nav class="nav">
+<button class="active" data-page="dashboard">⌂ Dashboard</button>
+<button data-page="subjects">▣ Subjects</button>
+<button data-page="history">◷ History</button>
+<button data-page="analytics">▥ Analytics</button>
+<button data-page="settings">⚙ Settings</button>
+</nav>
+</aside>
+
+<main class="main">
+<div class="top">
+<div><h1 id="pageTitle">Dashboard</h1><div class="sub" id="todayText"></div></div>
+<select class="select" id="streamSelect"></select>
+</div>
+
+<section id="dashboard" class="page active">
+<div class="cards">
+<div class="card"><div class="label">Today</div><div class="value" id="todayTotal">0m</div></div>
+<div class="card"><div class="label">This Week</div><div class="value" id="weekTotal">0m</div></div>
+<div class="card"><div class="label">This Month</div><div class="value" id="monthTotal">0m</div></div>
+<div class="card"><div class="label">Overall</div><div class="value" id="overallTotal">0m</div></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="title">Your Subjects</div><div id="dashboardSubjects" class="subject-grid"></div></div>
+<div class="card"><div class="title">Study Timer</div><div class="timer">
+<div class="timer-name" id="timerSubject">Select a subject</div>
+<div class="clock" id="timerDisplay">00:00:00</div>
+<div class="status" id="timerStatus">Ready to study</div>
+<div class="actions">
+<button class="btn primary" id="startBtn">▶ Start</button>
+<button class="btn" id="pauseBtn">⏸ Pause</button>
+<button class="btn" id="restartBtn">↻ Restart</button>
+<button class="btn green" id="saveBtn">✓ Save</button>
+</div>
+</div></div>
+</div>
+</section>
+
+<section id="subjects" class="page">
+<div class="card"><div class="title">Choose Your Stream</div><div class="streams" id="streamCards"></div></div>
+<div class="card" style="margin-top:18px">
+<div class="title">Subjects in <span id="subjectStreamName"></span></div>
+<div class="form"><input class="input" id="newSubject" maxlength="60" placeholder="Enter your own subject"><button class="btn primary" id="addSubjectBtn">+ Add Subject</button></div>
+<div id="subjectList" class="subject-grid"></div>
+</div>
+</section>
+
+<section id="history" class="page">
+<div class="card"><div class="title">Complete Study History</div>
+<div class="form"><input class="input" type="date" id="historyDate"><select class="input" id="historySubject"><option value="">All subjects</option></select><button class="btn" id="clearFilters">Clear Filters</button></div>
+<div class="table"><table><thead><tr><th>Date</th><th>Day</th><th>Stream</th><th>Subject</th><th>Time</th><th>Action</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+</div>
+</section>
+
+<section id="analytics" class="page">
+<div class="cards">
+<div class="card"><div class="label">Sessions</div><div class="value" id="sessionCount">0</div></div>
+<div class="card"><div class="label">Subjects Studied</div><div class="value" id="studiedSubjects">0</div></div>
+<div class="card"><div class="label">Average / Study Day</div><div class="value" id="averageDay">0m</div></div>
+<div class="card"><div class="label">Longest Session</div><div class="value" id="longestSession">0m</div></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="title">Last 7 Days</div><div class="chartwrap"><canvas class="chart" id="weekChart"></canvas></div></div>
+<div class="card"><div class="title">Subject Totals</div><div id="subjectTotals"></div></div>
+</div>
+</section>
+
+<section id="settings" class="page">
+<div class="settings">
+<div class="card"><div class="title">Backup Your Records</div><p class="sub">Export all subjects, settings and study history as a backup file.</p>
+<div class="actions"><button class="btn primary" id="exportBtn">↓ Export Backup</button><label class="filebtn">↑ Import Backup<input type="file" id="importFile" accept=".json" hidden></label></div></div>
+<div class="card"><div class="title">Data Storage</div><p class="sub">Records are saved in this browser. Export a backup before clearing browser data or moving to another computer.</p><button class="btn red" id="resetBtn">Reset All Data</button></div>
+</div>
+</section>
+</main></div>
+
+<div class="modal-bg" id="modal"><div class="modal">
+<h3>Edit Study Record</h3><p class="sub">Enter the corrected number of minutes.</p>
+<input class="input" id="editMinutes" type="number" min="0" step="1">
+<div class="actions" style="margin-top:15px"><button class="btn primary" id="editSave">Save</button><button class="btn" id="editCancel">Cancel</button></div>
+</div></div>
+
+<script>
+const DEFAULTS={
+Medical:["English","Urdu","Islamiyat","Pakistan Studies","Biology","Physics","Chemistry"],
+"Pre-Engineering":["English","Urdu","Islamiyat","Pakistan Studies","Mathematics","Physics","Chemistry"],
+ICS:["English","Urdu","Islamiyat","Pakistan Studies","Mathematics","Physics","Computer Science"],
+Commerce:["English","Urdu","Islamiyat","Pakistan Studies","Principles of Accounting","Principles of Economics","Principles of Commerce","Business Mathematics"],
+Arts:["English","Urdu","Islamiyat","Pakistan Studies","Education","Civics","Sociology","Economics"]
+};
+const KEY="StudyTrack_v2";
+const DB_NAME="StudyTrack_Data";
+const DB_VERSION=1;
+let data={stream:"ICS",subjects:JSON.parse(JSON.stringify(DEFAULTS)),records:[]};
+for(const s of Object.keys(DEFAULTS))if(!data.subjects[s])data.subjects[s]=DEFAULTS[s].slice();
+
+let current=null;
+let timerState={running:false,base:0,startedAt:null};
+let tick=null,editId=null;
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const localKey=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+const today=()=>localKey(new Date());
+const fmt=sec=>{sec=Math.max(0,Math.floor(sec));let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return [h,m,s].map((v,i)=>String(v).padStart(2,"0")).join(":")};
+const short=sec=>{sec=Math.floor(sec);let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return h?`${h}h ${m}m`:m?`${m}m`:"0m"};
+const dayName=d=>new Date(d+"T12:00:00").toLocaleDateString(undefined,{weekday:"long"});
+function openDB(){
+return new Promise((resolve,reject)=>{
+let req=indexedDB.open(DB_NAME,DB_VERSION);
+req.onupgradeneeded=()=>{let db=req.result;if(!db.objectStoreNames.contains("state"))db.createObjectStore("state")};
+req.onsuccess=()=>resolve(req.result);
+req.onerror=()=>reject(req.error);
+});
+}
+async function persist(){
+let snapshot=JSON.stringify(data);
+try{localStorage.setItem(KEY,snapshot)}catch(e){}
+try{
+let db=await openDB();
+await new Promise((resolve,reject)=>{
+let tx=db.transaction("state","readwrite");
+tx.objectStore("state").put(data,"data");
+tx.oncomplete=resolve;
+tx.onerror=()=>reject(tx.error);
+});
+db.close();
+}catch(e){}
+}
+async function loadSavedData(){
+let saved=null;
+try{
+let db=await openDB();
+saved=await new Promise((resolve,reject)=>{
+let req=db.transaction("state","readonly").objectStore("state").get("data");
+req.onsuccess=()=>resolve(req.result);
+req.onerror=()=>reject(req.error);
+});
+db.close();
+}catch(e){}
+if(saved&&saved.subjects&&Array.isArray(saved.records)){
+data=saved;
+}else{
+try{
+let oldSaved=JSON.parse(localStorage.getItem(KEY)||"null");
+if(oldSaved&&oldSaved.subjects&&Array.isArray(oldSaved.records))data=oldSaved;
+}catch(e){}
+}
+for(const s of Object.keys(DEFAULTS))if(!data.subjects[s])data.subjects[s]=DEFAULTS[s].slice();
+}
+function total(fn){return data.records.filter(fn).reduce((a,r)=>a+r.seconds,0)}
+function streamTotal(s,sub){return total(r=>r.stream===s&&r.subject===sub)}
+function weekStart(){let d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return localKey(d)}
+function monthStart(){let d=new Date();d.setDate(1);return localKey(d)}
+function allSubjects(){return Object.entries(data.subjects).flatMap(([stream,arr])=>arr.map(subject=>({stream,subject})))}
+
+function renderSelect(){
+$("streamSelect").innerHTML=Object.keys(DEFAULTS).map(s=>`<option ${s===data.stream?"selected":""}>${esc(s)}</option>`).join("");
+$("streamSelect").onchange=e=>{data.stream=e.target.value;persist();renderAll()}
+}
+function renderStats(){
+$("todayTotal").textContent=short(total(r=>r.date===today()));
+$("weekTotal").textContent=short(total(r=>r.date>=weekStart()));
+$("monthTotal").textContent=short(total(r=>r.date>=monthStart()));
+$("overallTotal").textContent=short(total(()=>true));
+$("todayText").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+function subjectCards(el,stream){
+let arr=data.subjects[stream]||[];
+el.innerHTML=arr.length?arr.map(s=>{let sec=streamTotal(stream,s);return `<div class="subject" data-stream="${esc(stream)}" data-sub="${esc(s)}"><div class="sname">${esc(s)}</div><div class="stime">${short(sec)} total</div><div class="progress"><div class="bar" style="width:${Math.min(100,sec/3600*100)}%"></div></div></div>`}).join(""):`<div class="empty">No subjects yet.</div>`;
+el.querySelectorAll(".subject").forEach(x=>x.onclick=()=>choose(x.dataset.stream,x.dataset.sub));
+}
+function choose(stream,subject){
+data.stream=stream;current={stream,subject};
+$("timerSubject").textContent=subject;
+$("timerStatus").textContent=timerState.running?"Studying…":"Ready to study";
+renderSelect();renderSubjectsPage();renderDashboard();
+document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+document.querySelector('[data-page="dashboard"]').classList.add("active");
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("dashboard").classList.add("active");
+$("pageTitle").textContent="Dashboard";
+}
+function elapsedNow(){
+if(!timerState.running)return timerState.base;
+return timerState.base+Math.floor((Date.now()-timerState.startedAt)/1000);
+}
+function drawTimer(){ $("timerDisplay").textContent=fmt(elapsedNow()); }
+function start(){
+if(!current){alert("Select a subject first.");return}
+if(timerState.running)return;
+timerState.startedAt=Date.now();timerState.running=true;
+$("timerStatus").textContent="Studying…";
+clearInterval(tick);tick=setInterval(drawTimer,500);drawTimer();
+}
+function pause(){
+if(!timerState.running)return;
+timerState.base=elapsedNow();timerState.startedAt=null;timerState.running=false;clearInterval(tick);
+$("timerStatus").textContent="Paused";drawTimer();
+}
+function restart(){
+timerState={running:false,base:0,startedAt:null};clearInterval(tick);drawTimer();$("timerStatus").textContent="Timer restarted";
+}
+function saveTimer(){
+if(!current||elapsedNow()<1){alert("There is no study time to save.");return}
+let sec=elapsedNow();pause();
+data.records.push({id:(crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())),date:today(),stream:current.stream,subject:current.subject,seconds:sec,createdAt:new Date().toISOString()});
+persist();timerState={running:false,base:0,startedAt:null};drawTimer();$("timerStatus").textContent="Saved successfully ✓";renderAll();
+}
+$("startBtn").onclick=start;$("pauseBtn").onclick=pause;$("restartBtn").onclick=restart;$("saveBtn").onclick=saveTimer;
+
+function renderDashboard(){subjectCards($("dashboardSubjects"),data.stream);drawTimer()}
+function renderSubjectsPage(){
+$("subjectStreamName").textContent=data.stream;
+$("streamCards").innerHTML=Object.keys(DEFAULTS).map(s=>`<div class="stream ${s===data.stream?"active":""}" data-streampick="${esc(s)}"><b>${esc(s)}</b><span>${data.subjects[s].length} subjects</span></div>`).join("");
+$("streamCards").querySelectorAll(".stream").forEach(x=>x.onclick=()=>{data.stream=x.dataset.streampick;persist();renderAll()});
+$("subjectList").innerHTML=(data.subjects[data.stream]||[]).map(s=>`<div class="subject"><div class="sname">${esc(s)}</div><div class="stime">${short(streamTotal(data.stream,s))} studied</div><div class="actions" style="margin-top:11px"><button class="btn small primary" data-use="${esc(s)}">Study</button><button class="btn small red" data-del="${esc(s)}">Delete</button></div></div>`).join("")||`<div class="empty">Add your first subject.</div>`;
+$("subjectList").querySelectorAll("[data-use]").forEach(b=>b.onclick=()=>choose(data.stream,b.dataset.use));
+$("subjectList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>deleteSubject(b.dataset.del));
+}
+function deleteSubject(s){
+if(!confirm(`Delete "${s}" from your subjects? Existing history will be kept.`))return;
+data.subjects[data.stream]=data.subjects[data.stream].filter(x=>x!==s);persist();if(current?.stream===data.stream&&current?.subject===s){current=null;restart();$("timerSubject").textContent="Select a subject"}renderAll();
+}
+$("addSubjectBtn").onclick=()=>{
+let s=$("newSubject").value.trim();if(!s)return;
+if(data.subjects[data.stream].some(x=>x.toLowerCase()===s.toLowerCase())){alert("That subject already exists.");return}
+data.subjects[data.stream].push(s);$("newSubject").value="";persist();renderAll();
+};
+$("newSubject").addEventListener("keydown",e=>{if(e.key==="Enter")$("addSubjectBtn").click()});
+
+function renderHistory(){
+let sub=$("historySubject").value,date=$("historyDate").value;
+let all=[...data.records].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));
+let list=all.filter(r=>(!date||r.date===date)&&(!sub||r.subject===sub));
+$("historyBody").innerHTML=list.length?list.map(r=>`<tr><td>${r.date}</td><td>${dayName(r.date)}</td><td>${esc(r.stream)}</td><td>${esc(r.subject)}</td><td>${short(r.seconds)}</td><td><button class="btn small" data-edit="${r.id}">Edit</button> <button class="btn small red" data-remove="${r.id}">Delete</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">No study records found.</td></tr>`;
+$("historyBody").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEdit(b.dataset.edit));
+$("historyBody").querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{if(confirm("Delete this study record?")){data.records=data.records.filter(r=>r.id!==b.dataset.remove);persist();renderAll()}});
+}
+function populateHistorySubjects(){
+let current=$("historySubject").value;
+$("historySubject").innerHTML=`<option value="">All subjects</option>`+allSubjects().map(x=>`<option>${esc(x.subject)}</option>`).join("");
+$("historySubject").value=current;
+}
+$("historyDate").onchange=renderHistory;$("historySubject").onchange=renderHistory;$("clearFilters").onclick=()=>{$("historyDate").value="";$("historySubject").value="";renderHistory()};
+
+function openEdit(id){
+editId=id;let r=data.records.find(x=>x.id===id);if(!r)return;
+$("editMinutes").value=Math.round(r.seconds/60);$("modal").classList.add("show");
+}
+$("editCancel").onclick=()=>{$("modal").classList.remove("show");editId=null};
+$("editSave").onclick=()=>{let mins=Math.max(0,Number($("editMinutes").value)||0),r=data.records.find(x=>x.id===editId);if(r)r.seconds=Math.round(mins*60);persist();$("modal").classList.remove("show");editId=null;renderAll()};
+
+function renderAnalytics(){
+$("sessionCount").textContent=data.records.length;
+let studied=new Set(data.records.filter(r=>r.seconds>0).map(r=>r.stream+"|"+r.subject));
+$("studiedSubjects").textContent=studied.size;
+let days=new Set(data.records.filter(r=>r.seconds>0).map(r=>r.date));
+let totalSec=data.records.reduce((a,r)=>a+r.seconds,0);
+$("averageDay").textContent=short(days.size?totalSec/days.size:0);
+$("longestSession").textContent=short(Math.max(0,...data.records.map(r=>r.seconds)));
+let totals={};data.records.forEach(r=>{let k=r.subject;totals[k]=(totals[k]||0)+r.seconds});
+$("subjectTotals").innerHTML=Object.entries(totals).sort((a,b)=>b[1]-a[1]).map(([s,v])=>`<div style="margin:11px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><b>${esc(s)}</b><span>${short(v)}</span></div><div class="progress"><div class="bar" style="width:${Math.min(100,v/3600*100)}%"></div></div></div>`).join("")||`<div class="empty">Start studying to see your analytics.</div>`;
+drawChart();
+}
+function drawChart(){
+let c=$("weekChart"),ctx=c.getContext("2d"),dpr=window.devicePixelRatio||1,w=c.clientWidth||600,h=230;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+let vals=[],labels=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=localKey(d);vals.push(total(r=>r.date===k)/3600);labels.push(d.toLocaleDateString(undefined,{weekday:"short"}))}
+let max=Math.max(1,...vals),left=40,bottom=30,top=15,chartH=h-top-bottom,barW=(w-left-15)/7-10;
+ctx.strokeStyle="#e5e9f1";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,top);ctx.lineTo(left,h-bottom);ctx.lineTo(w-10,h-bottom);ctx.stroke();
+ctx.fillStyle="#356ae6";ctx.font="12px Segoe UI";
+vals.forEach((v,i)=>{let bh=v/max*chartH,x=left+10+i*(barW+10),y=h-bottom-bh;ctx.fillRect(x,y,barW,bh);ctx.fillStyle="#6b7280";ctx.fillText(labels[i],x,h-9);ctx.fillStyle="#356ae6";if(v>0)ctx.fillText(v<1?Math.round(v*60)+"m":v.toFixed(1)+"h",x,y-4)});
+}
+window.addEventListener("resize",drawChart);
+
+function exportData(){
+let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+a.href=url;a.download="StudyTrack-Backup-"+today()+".json";a.click();URL.revokeObjectURL(url);
+}
+$("exportBtn").onclick=exportData;
+$("importFile").onchange=e=>{
+let file=e.target.files[0];if(!file)return;let reader=new FileReader();
+reader.onload=()=>{try{let x=JSON.parse(reader.result);if(!x.subjects||!Array.isArray(x.records))throw Error();data=x;persist();renderAll();alert("Backup imported successfully.");}catch{alert("This is not a valid StudyTrack backup.");}e.target.value=""};reader.readAsText(file);
+};
+$("resetBtn").onclick=async()=>{
+if(!confirm("This will permanently delete all subjects and study records from this browser. Continue?"))return;
+try{localStorage.removeItem(KEY)}catch(e){}
+try{
+let db=await openDB();
+await new Promise((resolve,reject)=>{
+let tx=db.transaction("state","readwrite");
+tx.objectStore("state").clear();
+tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+});
+db.close();
+}catch(e){}
+location.reload();
+};
+
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{
+document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.page).classList.add("active");
+$("pageTitle").textContent=b.textContent.replace(/^[^A-Za-z]+/,"").trim();
+if(b.dataset.page==="analytics")renderAnalytics();if(b.dataset.page==="history")renderHistory();
+});
+
+function renderAll(){renderSelect();renderStats();renderDashboard();renderSubjectsPage();populateHistorySubjects();renderHistory();renderAnalytics()}
+(async()=>{await loadSavedData();renderAll()})();
+</script>
+</body>
+</html>
